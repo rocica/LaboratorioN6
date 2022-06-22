@@ -1,0 +1,85 @@
+CREATE TABLE DATA_AHORROS(
+Tipo_ahorro NUMBER (2) NOT NULL,
+ monto_ahorrado NUMBER (20) NOT NULL,
+ cod_sucursal VARCHAR2 (4) NOT NULL,
+ CONSTRAINT Tipo_ahorro PRIMARY KEY(Tipo_ahorro),
+ CONSTRAINT fk_cod_sucursal_ahorros FOREIGN KEY(COD_SUCURSAL) REFERENCES SUCURSALES (cod_sucursal)
+  );
+
+ALTER TABLE DATA_AHORROS ADD(
+
+TASA_AHORRO NUMBER (5) NOT NULL,
+TIPO_AHORRO NUMBER(2) NOT NULL,
+DESCRIPCION_AHORRO VARCHAR(25) NOT NULL,
+CONSTRAINT FK_TIPO_AHORRO FOREIGN KEY (TIPO_AHORRO)
+REFERENCES DATA_AHORRO(TIPO_AHORRO)
+);
+
+CREATE TABLE DATA_AHORROS(
+Tipo_ahorro NUMBER (2) NOT NULL,
+ monto_ahorrado NUMBER (20) NOT NULL,
+ cod_sucursal VARCHAR2 (4) NOT NULL,
+ CONSTRAINT Tipo_ahorro PRIMARY KEY(Tipo_ahorro),
+ CONSTRAINT fk_cod_sucursal_ahorros FOREIGN KEY(COD_SUCURSAL) REFERENCES SUCURSALES (cod_sucursal)
+  );
+
+ALTER TABLE DATA_AHORROS ADD(
+TASA_AHORRO NUMBER (5) NOT NULL,
+TIPO_AHORRO NUMBER(2) NOT NULL,
+DESCRIPCION_AHORRO VARCHAR(25) NOT NULL,
+CONSTRAINT FK_TIPO_AHORRO FOREIGN KEY (TIPO_AHORRO)
+REFERENCES DATA_AHORRO(TIPO_AHORRO)
+);
+
+
+CREATE TABLE ahorros(
+	cod_sucursal varchar2(4) NOT NULL,
+	id_cliente varchar2(50) NOT NULL,
+	id_tipoahorro varchar2(6) NOT NULL,
+	numcuenta varchar2(7) NOT NULL,
+	fechapertura date,
+	tasainteres_ahorro varchar2(8) NOT NULL,
+	letradepomens varchar2(8) NOT NULL,
+	saldoahorro number(9,2) NOT NULL,
+	saldointeres number(2,2) NOT NULL,
+	fechadepo_ahorro date,
+	fecharetiro_ahorro date,
+	usuario varchar2(8) NOT NULL,
+	fechamod_ahorro date,
+CONSTRAINT numcuenta PRIMARY KEY (numcuenta),
+CONSTRAINT FK_ahorros_cod_sucursal FOREIGN KEY (cod_sucursal)
+	REFERENCES sucursales(cod_sucursal),
+CONSTRAINT FK_id_cliente_ahorro FOREIGN KEY (id_cliente)
+	REFERENCES cliente(id_cliente),
+CONSTRAINT FK_id_tipoahorro FOREIGN KEY (id_tipoahorro)
+	REFERENCES ahorro(id_tipoahorro),
+);
+
+CREATE TABLE auditoria(
+	id_transaccion_ahorro varchar2(4) NOT NULL,
+	tabla varchar2(15) NOT NULL,
+	id_cliente varchar2(15) NOT NULL,
+	id_tipoahorro varchar2(15) NOT NULL,
+	tipo_transac varchar2(7) NOT NULL,
+	 saldo_anterior number(9,2) NOT NULL,
+	monto_retdep number(9,2) NOT NULL,
+	saldofinal_desp number(9,2) NOT NULL,
+	usuario varchar2(15) NOT NULL,
+	fecha date,
+CONSTRAINT PK_id_transaccion_ahorro PRIMARY KEY (id_transaccion_ahorro),
+CONSTRAINT ahorros_cod_sucursal_fk FOREIGN KEY (cod_sucursal)
+	REFERENCES sucursales(cod_sucursal),
+CONSTRAINT FK_id_cliente_auditoria FOREIGN KEY (id_cliente)
+	REFERENCES cliente(id_cliente),
+CONSTRAINT FK_id_tipoahorro_auditoria FOREIGN KEY (id_tipoahorro)
+	REFERENCES ahorro(id_tipoahorro)
+);
+
+
+ALTER TABLE auditoria
+ADD CONSTRAINT 
+  CHECK (tipo_op IN ('I', 'U', 'D'));
+
+ALTER TABLE auditoria
+ADD CONSTRAINT 
+  CHECK (tipo_transac IN ('1','2'));

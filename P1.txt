@@ -1,0 +1,29 @@
+Procedimiento 1
+
+
+create sequence cont_ahorro
+start with 1
+increment by 1;
+
+
+create or replace procedure Nuevo_Tipo_ahorros(
+	p_tipo_ahorro in TABLA.ATRIBUTO1%Type,
+	p_interes in TABLA.ATRIBUTO2%type) is
+begin
+	insert into tipo_ahorro(cod_ahorro, descripcion, tasa_interes) 
+	values (cont_ahorro.nextval, p_tipo_ahorro, p_interes);
+exception
+	WHEN dup_val_on_index THEN
+		DBMS_OUTPUT.PUT_LINE(‘Valores duplicados’);
+	WHEN others THEN
+		DBMS_OUTPUT.PUT_LINE(‘Error desconocido’);
+END;
+/
+
+begin
+	nuevo_tipo_ahorros('Navidad', 6);
+	nuevo_tipo_ahorros('Corriente', 4);
+	nuevo_tipo_ahorros('Escolar', 6);
+end;
+/
+
