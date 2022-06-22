@@ -1,4 +1,106 @@
 Procedimiento 4
 
 Actualizar depositos o retiros 
-Cursor
+Cursor deposito retiro en tabla Transadeporeti
+
+Atualizar tabla ahorros
+
+Calculo en función 
+Si es navidad o escolar = montodeposito * tasade interes% 
+No se pueden hacer retiros de estas cuentas(?)
+
+Actualizar saldos
+
+si es corriente = depositoOretiro
+
+
+CREATE OR REPLACE FUNCTION InteresAhorro(
+	p_monto in tabla.columna%type,
+	p_interes in data_ahorros.tasa_ahorro%type)
+	RETURN tabla.columna%type IS 
+BEGIN 
+	RETURN (p_monto*p_interes)/100;
+END InteresAhorro
+/
+
+CREATE OR REPLACE PROCEDURA ActualizarTransacciones IS
+	v_idcliente transadeporeti.id_cliente%type;
+	v_dep_ret transadeporeti.monto%type;
+	v_tipoahorro transadeporeti.tipoahorro%type;
+	V_tipotransac transadeporeti.tipotransac%type
+	v_interes transadeporeti.monto%type;
+
+	v_tasa ahorros.tasainteres_ahorro%type;
+	v_salAhorro ahorros.saldoahorro%type;
+	v_salInteres ahorros.saldoahorro%type;
+	v_NewSalAhoro ahorros.saldoahorro%type;
+	v_NewInteres ahorros.saldoahorro%type;
+	
+	
+
+	CURSOR c_Transacciones IS 
+		SELECT id_cliente, tipoahorro, tipotransac, dep_ret  
+		FROM transadeporeti
+		WHERE (status = 'N');
+
+	CURSOR c_ahorros IS
+		SELECT tasainteres_ahorro, saldoahorro, saldointeres
+		FROM ahorros;
+
+
+BEGIN
+	OPEN c_Transacciones;
+	OPEN c_ahorros;
+	LOOP
+		FETCH c_Transacciones INTO v_idcliente, v_tipoahorro, 
+			v_tipotransac, v_dep_ret;
+		FETCH c_ahorros INTO v_tasa, v_salAhorro, v_salInteres;
+		
+		EXIT WHEN c_Transacciones%NOTFOUND;
+		IF (v_tipotransac = 1)
+			IF (v_tipoahorro = 1) OR (v_tipoahorro = 3) THEN
+				v_interes := InteresAhorro(v_dep_ret, v_tasa);
+				v_NewSalAhoro := v_salAhorro + v_dep_ret;
+				v_NewInteres := v_salInteres + v_interes;
+			ELSE
+				v_NewSalAhoro := v_salAhorro + v_dep_ret;
+			END IF;
+		ELSE 
+			IF (v_tipoahorro = 1) OR (v_tipoahorro = 3) THEN
+				DBMS_OUTPUT.PUT_LINE('No se pueden hacer retiros de las cuentas de ahorro escolar o de navidad')
+			ELSE
+				v_NewSalAhoro := v_salAhorro - v_dep_ret;
+			END IF;
+		END IF;
+		
+	IF (v_tipotransac = 1)
+		UPDATE ahorros
+		SET = saldoahorro = v_NewSalAhorro,
+			saldointeres = v_NewInteres,
+			fechadepo_ahorro = sysdate
+		WHERE (id_cliente = v_idcliente)
+		AND (tipoahorro = v_tipoahorro);
+	ELSE 
+		UPDATE ahorros
+		SET = saldoahorro = v_NewSalAhorro,
+			saldointeres = 
+			fecharetiro_ahorro = sysdate;
+		WHERE (id_cliente = v_idcliente)
+		AND (tipoahorro = v_tipoahorro);
+	END IF;
+
+
+1 = deposito
+2 = retiro
+ACUTIALIZAR LOS MONTOS DE SUCURSAL EN AHORROS
+
+
+
+
+
+
+
+
+
+
+
